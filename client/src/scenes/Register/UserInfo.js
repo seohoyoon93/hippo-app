@@ -88,7 +88,7 @@ class UserInfo extends Component {
           <TouchableOpacity
             onPress={() => this.props.navigation.navigate("UnitSetting")}
           >
-            <Icon name="arrow-long-left" size={32} color="#ffffff" />
+            <Icon name="arrow-long-left" size={24} color="#ffffff" />
           </TouchableOpacity>
         </View>
         <View style={styles.headerViewStyle}>
@@ -205,7 +205,8 @@ const styles = StyleSheet.create({
   arrowViewStyle: {
     justifyContent: "flex-start",
     height: 80,
-    width: 320
+    width: 320,
+    marginBottom: 24
   },
   headerViewStyle: {
     marginBottom: 20
@@ -214,7 +215,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#7dc2f6",
     flex: 1,
     alignItems: "center",
-    justifyContent: "center"
+    paddingTop: 60
   },
   textStyle: {
     fontSize: 16,
