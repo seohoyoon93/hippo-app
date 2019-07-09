@@ -58,7 +58,7 @@ class Main extends Component {
             onPress={() => this.props.navigation.navigate("Settings")}
           />
           <View>
-            <Text>알림설정도</Text>
+            <Text style={{ fontFamily: "BMJUAOTF" }}>알림설정도</Text>
             <Text>있포!!</Text>
           </View>
           <Text>{percentage}%</Text>

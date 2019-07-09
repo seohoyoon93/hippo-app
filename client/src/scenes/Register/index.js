@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, Button, StyleSheet, NativeModules } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 export default class Register extends Component {
   constructor(props) {
@@ -15,7 +15,7 @@ export default class Register extends Component {
     return (
       <View style={styles.container}>
         <View style={{ flex: 1 }}>
-          <View style={{ marginTop: 129 }}>
+          <View style={{ marginTop: 159 }}>
             <Text style={styles.header}>물 마시고</Text>
             <Text style={styles.header}>건강하게 :)</Text>
           </View>
@@ -25,11 +25,9 @@ export default class Register extends Component {
           </View>
         </View>
         <View style={{ flex: 1 }}>
-          <Button
-            title="시작하기"
-            onPress={this.onPress}
-            style={styles.button}
-          />
+          <TouchableOpacity onPress={this.onPress} style={styles.button}>
+            <Text style={styles.buttonText}>시작하기</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -44,18 +42,31 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   header: {
-    fontSize: 30,
-    color: "#ffffff"
+    fontSize: 36,
+    color: "#ffffff",
+    fontFamily: "BMJUAOTF",
+    textAlign: "center"
   },
   description: {
-    fontSize: 15,
-    color: "#ffffff"
+    fontSize: 16,
+    color: "#ffffff",
+    fontFamily: "BMJUAOTF",
+    textAlign: "center"
   },
   button: {
     width: 207,
     height: 64,
     backgroundColor: "#ffffff",
     fontSize: 22,
-    borderRadius: 36.5
+    borderRadius: 36.5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 169
+  },
+  buttonText: {
+    fontSize: 20,
+    color: "#348dcd",
+    fontFamily: "BMJUAOTF",
+    textAlign: "center"
   }
 });
