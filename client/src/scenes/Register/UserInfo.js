@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { View, Text, Picker, TextInput, Button } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert
+} from "react-native";
+import RNPickerSelect from "react-native-picker-select";
+import Icon from "react-native-vector-icons/Entypo";
 
 import {
   selectGender,
@@ -10,6 +19,32 @@ import {
   calculateGoal
 } from "../../store/register/actions";
 
+const genders = [
+  {
+    label: "남자",
+    value: "male"
+  },
+  {
+    label: "여자",
+    value: "female"
+  }
+];
+
+const trainings = [
+  {
+    label: "숨쉬기",
+    value: "breath"
+  },
+  {
+    label: "보통",
+    value: "normal"
+  },
+  {
+    label: "활동적",
+    value: "intense"
+  }
+];
+
 class UserInfo extends Component {
   constructor(props) {
     super(props);
@@ -17,64 +52,232 @@ class UserInfo extends Component {
     this.onPressNext = this.onPressNext.bind(this);
   }
   async onPressNext() {
-    this.props.calculateGoal();
-    await this.props.navigation.navigate("Goal");
+    const height = parseInt(this.props.height);
+    const weight = parseInt(this.props.weight);
+    if (this.props.height === "") {
+      Alert.alert(
+        "앗! 키를 입력하지 않으셨어요!",
+        "키를 입력해주세요",
+        [{ text: "확인" }],
+        { cancelable: false }
+      );
+    } else if (this.props.weight === "") {
+      Alert.alert(
+        "앗! 몸무게를 입력하지 않으셨어요!",
+        "몸무게를 입력해주세요",
+        [{ text: "확인" }],
+        { cancelable: false }
+      );
+    } else if (isNaN(height) || isNaN(weight)) {
+      Alert.alert(
+        "숫자만 입력해주세요",
+        "키와 몸무게에는 숫자만 입력해주세요",
+        [{ text: "확인" }],
+        { cancelable: false }
+      );
+    } else {
+      this.props.calculateGoal();
+      await this.props.navigation.navigate("Goal");
+    }
   }
 
   render() {
     return (
-      <View>
-        <Text>키와 몸무게를 입력하면</Text>
-        <Text>히포가 신체에 맞는 일일목표량 설</Text>
-        <Text>정을 도와줄게요</Text>
-        <View>
-          <Text>성별</Text>
-          <Picker
-            selectedValue={this.props.gender}
+      <View style={styles.container}>
+        <View style={styles.arrowViewStyle}>
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("UnitSetting")}
+          >
+            <Icon name="arrow-long-left" size={32} color="#ffffff" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.headerViewStyle}>
+          <Text style={styles.textStyle}>키와 몸무게를 입력하면</Text>
+          <Text style={styles.textStyle}>히포가 신체에 맞는 일일목표량 설</Text>
+          <Text style={styles.textStyle}>정을 도와줄게요</Text>
+        </View>
+        <View style={styles.pickerViewStyle}>
+          <Text style={styles.labelStyle}>성별</Text>
+          <RNPickerSelect
+            placeholder={{}}
+            items={genders}
             onValueChange={gender => {
               this.props.selectGender(gender);
             }}
-          >
-            <Picker.Item label="남자" value="male" />
-            <Picker.Item label="여자" value="female" />
-          </Picker>
-        </View>
-        <View>
-          <Text>키</Text>
-          <TextInput
-            value={this.props.height}
-            onChangeText={height => {
-              this.props.setHeight(height);
+            style={pickerSelectStyles}
+            value={this.props.gender}
+            Icon={() => {
+              return (
+                <Icon
+                  style={{ marginTop: 18, marginRight: 10 }}
+                  name="chevron-down"
+                  size={16}
+                  color="#ffffff"
+                />
+              );
             }}
           />
         </View>
-        <View>
-          <Text>몸무게</Text>
-          <TextInput
-            value={this.props.weight}
-            onChangeText={weight => {
-              this.props.setWeight(weight);
-            }}
-          />
+        <View style={styles.pickerViewStyle}>
+          <Text style={styles.labelStyle}>키</Text>
+          <View style={styles.textInputViewStyle}>
+            <TextInput
+              style={styles.textInputStyle}
+              value={this.props.height}
+              onChangeText={height => {
+                this.props.setHeight(height);
+              }}
+            />
+            <Text style={styles.textInputTextStyle}>cm</Text>
+          </View>
         </View>
-        <View>
-          <Text>운동량</Text>
-          <Picker
-            selectedValue={this.props.training}
+        <View style={styles.pickerViewStyle}>
+          <Text style={styles.labelStyle}>몸무게</Text>
+          <View style={styles.textInputViewStyle}>
+            <TextInput
+              style={styles.textInputStyle}
+              value={this.props.weight}
+              onChangeText={weight => {
+                this.props.setWeight(weight);
+              }}
+            />
+            <Text style={styles.textInputTextStyle}>kg</Text>
+          </View>
+        </View>
+        <View style={styles.pickerViewStyle}>
+          <Text style={styles.labelStyle}>운동량</Text>
+          <RNPickerSelect
+            placeholder={{}}
+            items={trainings}
             onValueChange={training => {
               this.props.selectTraining(training);
             }}
-          >
-            <Picker.Item label="숨쉬기" value="breath" />
-            <Picker.Item label="보통" value="normal" />
-            <Picker.Item label="활동적" value="intense" />
-          </Picker>
+            style={pickerSelectStyles}
+            value={this.props.training}
+            Icon={() => {
+              return (
+                <Icon
+                  style={{ marginTop: 18, marginRight: 10 }}
+                  name="chevron-down"
+                  size={16}
+                  color="#ffffff"
+                />
+              );
+            }}
+          />
         </View>
-        <Button title="다음" onPress={this.onPressNext} />
+        <TouchableOpacity style={styles.button} onPress={this.onPressNext}>
+          <Text style={styles.buttonText}>다음</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 }
+
+const pickerSelectStyles = {
+  inputIOS: {
+    width: 207,
+    height: 44,
+    textAlign: "left",
+    color: "white",
+    fontSize: 16,
+    fontFamily: "BMJUAOTF",
+    paddingTop: 13,
+    paddingHorizontal: 10,
+    paddingBottom: 12,
+    borderBottomColor: "#ffffff",
+    borderBottomWidth: 1
+  },
+  inputAndroid: {
+    width: 207,
+    height: 44,
+    textAlign: "left",
+    color: "white",
+    fontSize: 16,
+    fontFamily: "BMJUAOTF",
+    borderBottomColor: "#ffffff",
+    borderBottomWidth: 1
+  },
+  placeholderColor: "white"
+};
+
+const styles = StyleSheet.create({
+  arrowViewStyle: {
+    justifyContent: "flex-start",
+    height: 80,
+    width: 320
+  },
+  headerViewStyle: {
+    marginBottom: 20
+  },
+  container: {
+    backgroundColor: "#7dc2f6",
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  textStyle: {
+    fontSize: 16,
+    lineHeight: 20,
+    fontFamily: "BMJUAOTF",
+    color: "#ffffff",
+    textAlign: "center"
+  },
+  pickerViewStyle: {
+    marginTop: 16,
+    width: 207,
+    justifyContent: "flex-start"
+  },
+  labelStyle: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontFamily: "BMJUAOTF",
+    color: "#ffffff",
+    opacity: 0.4
+  },
+  textInputViewStyle: {
+    width: 207,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottomColor: "#ffffff",
+    borderBottomWidth: 1
+  },
+  textInputStyle: {
+    width: 177,
+    height: 44,
+    textAlign: "left",
+    color: "white",
+    fontSize: 16,
+    fontFamily: "BMJUAOTF",
+    paddingTop: 13,
+    paddingHorizontal: 10,
+    paddingBottom: 12
+  },
+  textInputTextStyle: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontFamily: "BMJUAOTF",
+    opacity: 0.4,
+    marginRight: 10
+  },
+  button: {
+    width: 207,
+    height: 64,
+    backgroundColor: "#ffffff",
+    fontSize: 22,
+    borderRadius: 36.5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 95
+  },
+  buttonText: {
+    fontSize: 20,
+    color: "#348dcd",
+    fontFamily: "BMJUAOTF",
+    textAlign: "center"
+  }
+});
 
 const mapStateToProps = state => {
   return {

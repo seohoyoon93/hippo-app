@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontFamily: "BMJUAOTF",
     color: "#ffffff",
-    opacity: 0.3
+    opacity: 0.4
   },
   button: {
     width: 207,
