@@ -25,7 +25,7 @@ export default class App extends Component {
       AsyncStorage.getItem("isFirst")
         .then(res => {
           if (res !== null) {
-            resolve(true);
+            resolve(false);
           } else {
             resolve(true);
           }

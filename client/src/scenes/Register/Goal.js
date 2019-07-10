@@ -179,7 +179,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     setGoal: goal => dispatch(setGoal(goal))
-    // register: (lang, deviceId) => dispatch(register(lang, deviceId))
   };
 };
 
