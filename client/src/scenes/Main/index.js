@@ -27,6 +27,8 @@ class Main extends Component {
       total: 0,
       modalVisible: false
     };
+
+    this.onAddWater = this.onAddWater.bind(this);
   }
   async componentDidMount() {
     const id = await AsyncStorage.getItem("user_id");
@@ -45,6 +47,24 @@ class Main extends Component {
       res.json().then(user => {
         this.props.fetchedGoal(user[0].goal);
       })
+    );
+  }
+
+  async onAddWater() {
+    addWater(this.props.amount);
+    this.props.setAmount("");
+    this.setState({ modalVisible: false });
+    const id = await AsyncStorage.getItem("user_id");
+    const from = new Date().setHours(0, 0, 0, 0) / 1000;
+    fetch(`http://localhost:5000/api/v1/drinks?id=${id}&from=${from}`).then(
+      res =>
+        res.json().then(waters => {
+          let total = 0;
+          waters.forEach(item => {
+            total += item.amount;
+          });
+          this.setState({ total, waters });
+        })
     );
   }
 
@@ -155,9 +175,7 @@ class Main extends Component {
               <View style={styles.modalBtnViewStyle}>
                 <TouchableOpacity
                   style={styles.modalBtnAdd}
-                  onPress={() => {
-                    addWater(this.props.amount);
-                  }}
+                  onPress={this.onAddWater}
                 >
                   <Text style={styles.modalBtnText}>꿀꺽</Text>
                 </TouchableOpacity>
