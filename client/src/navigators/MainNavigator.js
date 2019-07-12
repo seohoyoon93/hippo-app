@@ -1,11 +1,11 @@
 import { createSwitchNavigator } from "react-navigation";
 
-import ModalNavigator from "./ModalNavigator";
+import Main from "../scenes/Main";
 import History from "../scenes/Main/History";
 import SettingsNavigator from "./SettingsNavigator";
 
 const MainNavigator = createSwitchNavigator({
-  Main: ModalNavigator,
+  Main: Main,
   History: History,
   Settings: SettingsNavigator
 });

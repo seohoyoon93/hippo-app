@@ -1,12 +1,22 @@
 import React, { Component } from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import {
+  View,
+  Modal,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Dimensions
+} from "react-native";
 import { connect } from "react-redux";
 import AsyncStorage from "@react-native-community/async-storage";
 import GestureRecognizer from "react-native-swipe-gestures";
 import LinearGradient from "react-native-linear-gradient";
 import Icon from "react-native-vector-icons/Entypo";
+import RNPickerSelect from "react-native-picker-select";
 
-import { fetchedGoal } from "../../store/main/actions";
+import { fetchedGoal, setAmount } from "../../store/main/actions";
+import { addWater } from "../../api";
 
 class Main extends Component {
   constructor(props) {
@@ -14,7 +24,8 @@ class Main extends Component {
 
     this.state = {
       waters: [],
-      total: 0
+      total: 0,
+      modalVisible: false
     };
   }
   async componentDidMount() {
@@ -43,6 +54,14 @@ class Main extends Component {
       velocityThreshold: 0.3,
       directionalOffsetThreshold: 80
     };
+    let waterArray = [];
+
+    for (i = 2; i <= 40; i++) {
+      let value = i * 25;
+      let label = value.toString() + "ml";
+      let obj = { label, value: value.toString() };
+      waterArray.push(obj);
+    }
     return (
       <GestureRecognizer
         onSwipeUp={() => {
@@ -77,7 +96,9 @@ class Main extends Component {
           </View>
           <View style={styles.buttonAddStyle}>
             <TouchableOpacity
-              onPress={() => this.props.navigation.navigate("AddWater")}
+              onPress={() =>
+                this.setState({ modalVisible: !this.state.modalVisible })
+              }
             >
               <Image source={require("../../assets/images/btnAdd.png")} />
             </TouchableOpacity>
@@ -89,17 +110,91 @@ class Main extends Component {
               <Icon size={16} name="chevron-down" color="#348dcd" />
             </TouchableOpacity>
           </View>
-          <View>
-            <Image
-              style={styles.hippoStyle}
-              source={require("../../assets/images/imgChaV1.png")}
-            />
+          <View style={styles.hippoStyle}>
+            <Image source={require("../../assets/images/imgChaV1.png")} />
           </View>
         </LinearGradient>
+        <Modal
+          animationType={"slide"}
+          transparent={true}
+          visible={this.state.modalVisible}
+        >
+          <View style={styles.modalViewStyle}>
+            <View style={styles.transparentBg} />
+            <View style={styles.modalCloseBtnViewStyle}>
+              <TouchableOpacity
+                onPress={() =>
+                  this.setState({ modalVisible: !this.state.modalVisible })
+                }
+              >
+                <Image source={require("../../assets/images/icCloseWon.png")} />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.modalContentStyle}>
+              <View style={styles.modalCupViewStyle}>
+                <TouchableOpacity>
+                  <Icon name="chevron-left" size={16} color="#348dcd" />
+                </TouchableOpacity>
+                <Image
+                  style={styles.modalImageStyle}
+                  source={require("../../assets/images/icCup1300.png")}
+                />
+                <TouchableOpacity>
+                  <Icon name="chevron-right" size={16} color="#348dcd" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.modalSliderViewStyle}>
+                <RNPickerSelect
+                  placeholder={{ label: "얼마나 마셨어포?", value: null }}
+                  items={waterArray}
+                  onValueChange={amount => this.props.setAmount(amount)}
+                  style={pickerSelectStyles}
+                  value={this.props.amount}
+                />
+              </View>
+              <View style={styles.modalBtnViewStyle}>
+                <TouchableOpacity
+                  style={styles.modalBtnAdd}
+                  onPress={() => {
+                    addWater(this.props.amount);
+                  }}
+                >
+                  <Text style={styles.modalBtnText}>꿀꺽</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </GestureRecognizer>
     );
   }
 }
+
+const pickerSelectStyles = {
+  inputIOS: {
+    width: 207,
+    height: 44,
+    textAlign: "center",
+    color: "#348dcd",
+    fontSize: 24,
+    fontFamily: "BMJUAOTF",
+    paddingTop: 13,
+    paddingHorizontal: 10,
+    paddingBottom: 12
+  },
+  inputAndroid: {
+    width: 207,
+    height: 44,
+    textAlign: "center",
+    color: "#348dcd",
+    fontSize: 24,
+    fontFamily: "BMJUAOTF"
+  },
+  placeholderColor: "white"
+};
+
+const screenHeight = Dimensions.get("window").height;
+const screenWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
   linearGradient: {
@@ -126,7 +221,7 @@ const styles = StyleSheet.create({
   },
   percentageStyle: {
     position: "absolute",
-    top: 177,
+    top: 187,
     right: 48,
     width: 100,
     height: 100,
@@ -163,26 +258,85 @@ const styles = StyleSheet.create({
     bottom: 30
   },
   hippoStyle: {
-    // position: "absolute",
-    // left: 0,
-    // right: 0,
-    // marginLeft: "auto",
-    // marginRight: "auto",
-    // bottom: 0,
-    // height: 588,
-    // width: 315
+    position: "absolute",
+    bottom: 0,
+    height: 588,
+    width: 315,
+    zIndex: -1
+  },
+  modalViewStyle: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-end"
+  },
+  transparentBg: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    flex: 1,
+    height: screenHeight,
+    width: screenWidth,
+    backgroundColor: "#000",
+    zIndex: -1,
+    opacity: 0.2
+  },
+  modalContentStyle: {
+    width: screenWidth - 20,
+    borderRadius: 4,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  modalCupViewStyle: {
+    flexDirection: "row",
+    marginTop: 40,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  modalImageStyle: {
+    width: 72,
+    height: 72,
+    marginRight: 10,
+    marginLeft: 10
+  },
+  modalSliderViewStyle: {
+    height: 100,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  modalBtnViewStyle: {
+    marginTop: 42,
+    marginBottom: 60,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  modalBtnAdd: {
+    width: 207,
+    height: 64,
+    borderRadius: 36.5,
+    backgroundColor: "#7dc2f6",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  modalBtnText: {
+    fontFamily: "BMJUAOTF",
+    fontSize: 20,
+    lineHeight: 32,
+    color: "#FFF"
   }
 });
 
 const mapStateToProps = state => {
   return {
-    goal: state.main.goal
+    goal: state.main.goal,
+    amount: state.main.amount
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchedGoal: goal => dispatch(fetchedGoal(goal))
+    fetchedGoal: goal => dispatch(fetchedGoal(goal)),
+    setAmount: amount => dispatch(setAmount(amount))
   };
 };
 

@@ -1,7 +1,7 @@
 import { SET_AMOUNT, FETCHED_GOAL } from "./actionTypes";
 
 const initialState = {
-  amount: "",
+  amount: null,
   goal: null
 };
 
